@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="ro">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Door - Dashboard</title>
+    <link rel="stylesheet" href="/static/css/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+
+<body>
+    <div class="app-container">
+        <aside class="sidebar">
+            <div class="logo">
+                <i class="fas fa-video"></i>
+                <h1>Smart Door</h1>
+            </div>
+
+            <nav>
+                <ul>
+                    <li class="active" data-target="dashboard">
+                        <i class="fas fa-home"></i>
+                        <span>Dashboard</span>
+                    </li>
+                    <li data-target="history">
+                        <i class="fas fa-history"></i>
+                        <span>Istoric</span>
+                    </li>
+                    <li data-target="face-management">
+                        <i class="fas fa-users"></i>
+                        <span>Gestionare fețe</span>
+                    </li>
+                    <li data-target="settings">
+                        <i class="fas fa-cog"></i>
+                        <span>Setări</span>
+                    </li>
+                </ul>
+            </nav>
+
+            <div class="sidebar-footer">
+                <a href="/logout" class="logout">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Deconectare</span>
+                </a>
+            </div>
+        </aside>
+
+        <!-- Main -->
+        <main>
+            <header>
+                <div class="header-title">
+                    <h2>Dashboard</h2>
+                </div>
+
+                <div class="notifications">
+                    <button id="notifications-toggle">
+                        <i class="fas fa-bell"></i>
+                        <span class="badge" id="notification-count">0</span>
+                    </button>
+
+                    <div class="notifications-panel" id="notifications-panel">
+                        <div class="notifications-header">
+                            <h3>Notificări</h3>
+                            <button id="clear-notifications">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+
+                        <div class="notifications-content" id="notifications-list">
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <div class="content">
+                <!-- Dashboard -->
+                <section id="dashboard" class="active">
+                    <!-- Stream Video Live -->
+                    <div class="card video-container">
+                        <h3><i class="fas fa-video"></i> Stream Video Live</h3>
+                        <div class="video-wrapper">
+                            <img id="video-stream" class="video-stream" src="" alt="Stream video indisponibil">
+                            <div id="loading-overlay" class="loading-overlay" style="display: none;">
+                                <i class="fas fa-spinner fa-spin"></i> &nbsp; Se încarcă stream-ul...
+                            </div>
+
+                            <!-- Face Detection Overlay -->
+                            <div id="face-detection-overlay" class="face-detection-overlay">
+                                <div class="scanner-container">
+                                    <div class="scanner-line"></div>
+                                    <div class="scanner-corners">
+                                        <div class="scanner-corner top-left"></div>
+                                        <div class="scanner-corner top-right"></div>
+                                        <div class="scanner-corner bottom-left"></div>
+                                        <div class="scanner-corner bottom-right"></div>
+                                    </div>
+                                </div>
+                                <div id="detection-text" class="detection-text">
+                                    🔍 DETECTARE FAȚĂ ÎN CURS
+                                </div>
+                                <div id="detection-subtext" class="detection-subtext processing-dots">
+                                    Se analizează imaginea
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="video-controls">
+                            <button id="open-door-btn" class="btn-open-door">
+                                <i class="fas fa-door-open"></i>
+                                Deschide Ușa
+                            </button>
+
+                            <button id="refresh-stream-btn" class="btn-refresh-stream">
+                                <i class="fas fa-sync-alt"></i>
+                                Reîmprospătează
+                            </button>
+
+                            <span id="stream-status" class="video-status status-offline">
+                                <i class="fas fa-circle"></i> Offline
+                            </span>
+                        </div>
+
+                        <div class="connection-info">
+                            <p id="connection-info">Camera IP: <span id="camera-ip">-</span></p>
+                        </div>
+                    </div>
+
+                    <!-- Just below stream -->
+
+                    <!-- Just blow stream ^^ -->
+
+                    <div class="card" id="current-visitor-card">
+                        <h3>Vizitator curent</h3>
+                        <div class="visitor-container">
+                            <div class="visitor-info">
+                                <p>Nu există vizitatori în acest moment.</p>
+                            </div>
+                            <div class="visitor-controls hidden">
+                                <button class="btn-success" id="grant-access">
+                                    <i class="fas fa-lock-open"></i> Permite accesul
+                                </button>
+                                <button class="btn-danger" id="deny-access">
+                                    <i class="fas fa-times"></i> Refuză accesul
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="stats-container">
+                        <div class="card stat-card">
+                            <i class="fas fa-user-check"></i>
+                            <h4>Total accesări</h4>
+                            <p id="total-visits">0</p>
+                        </div>
+
+                        <div class="card stat-card">
+                            <i class="fas fa-calendar-day"></i>
+                            <h4>Astăzi</h4>
+                            <p id="today-visits">0</p>
+                        </div>
+
+                        <div class="card stat-card">
+                            <i class="fas fa-user-times"></i>
+                            <h4>Refuzate</h4>
+                            <p id="denied-visits">0</p>
+                        </div>
+                    </div>
+
+                    <div class="card recent-activity">
+                        <h3>Activitate recentă</h3>
+                        <div id="recent-activity-list" class="activity-list">
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Istoric -->
+                <section id="history">
+                    <div class="card history-card">
+                        <h3>Istoric accesări</h3>
+
+                        <div class="history-filters">
+                            <div class="filter">
+                                <label for="date-filter">Filtrare după dată:</label>
+                                <input type="date" id="date-filter">
+                            </div>
+
+                            <div class="filter">
+                                <label for="status-filter">Status:</label>
+                                <select id="status-filter">
+                                    <option value="all">Toate</option>
+                                    <option value="granted">Acces permis</option>
+                                    <option value="denied">Acces refuzat</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="history-list" id="history-list">
+                        </div>
+                    </div>
+                </section>
+
+                <!-- TODO: remove this, only usedd for testing -->
+                <section id="manual-capture">
+                    <div class="card capture-card">
+                        <h3>Captură imagine manuală</h3>
+                        <p>Apăsați butonul de mai jos pentru a face o captură de la camera de la intrare.</p>
+
+                        <button class="btn-primary" id="take-photo">
+                            <i class="fas fa-camera"></i> Fotografiază
+                        </button>
+
+                        <div class="capture-preview" id="capture-preview">
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Face Management -->
+                <section id="face-management">
+                    <div class="card face-management-card">
+                        <h3>Gestionare fețe cunoscute</h3>
+
+                        <div class="face-actions">
+                            <button class="btn-primary" id="add-face-capture">
+                                <i class="fas fa-camera"></i> Adaugă față prin captură
+                            </button>
+
+                            <button class="btn-primary" id="add-face-upload">
+                                <i class="fas fa-upload"></i> Încarcă imagine
+                            </button>
+                        </div>
+
+                        <!-- Upload form -->
+                        <div class="upload-form" id="upload-form" style="display: none;">
+                            <h4>Încarcă imagine pentru față nouă</h4>
+                            <form id="face-upload-form" enctype="multipart/form-data">
+                                <div class="form-group">
+                                    <label for="face-name">Nume persoană:</label>
+                                    <input type="text" id="face-name" name="name" required placeholder="Ex: John Doe">
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="face-file">Selectează imagine:</label>
+                                    <input type="file" id="face-file" name="file" accept=".jpg,.jpeg,.png" required>
+                                </div>
+
+                                <div class="form-buttons">
+                                    <button type="submit" class="btn-success">
+                                        <i class="fas fa-save"></i> Salvează
+                                    </button>
+                                    <button type="button" class="btn-secondary" id="cancel-upload">
+                                        <i class="fas fa-times"></i> Anulează
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+
+                        <!-- Capture form -->
+                        <div class="capture-form" id="capture-form" style="display: none;">
+                            <h4>Adaugă față prin captură</h4>
+                            <div class="form-group">
+                                <label for="capture-name">Nume persoană:</label>
+                                <input type="text" id="capture-name" required placeholder="Ex: John Doe">
+                            </div>
+
+                            <div class="form-buttons">
+                                <button type="button" class="btn-success" id="capture-face">
+                                    <i class="fas fa-camera"></i> Capturează și salvează
+                                </button>
+                                <button type="button" class="btn-secondary" id="cancel-capture">
+                                    <i class="fas fa-times"></i> Anulează
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Known faces list -->
+                        <div class="known-faces-section">
+                            <h4>Fețe cunoscute</h4>
+                            <div class="known-faces-list" id="known-faces-list">
+                                <!-- Known faces will be loaded here -->
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <section id="settings">
+                    <div class="card settings-card">
+                        <h3>Setări</h3>
+
+                        <div class="settings-group">
+                            <h4>Parametri sistem</h4>
+
+                            <div class="setting">
+                                <label for="username">Utilizator:</label>
+                                <input type="text" id="username" value="admin">
+                            </div>
+
+                            <div class="setting">
+                                <label for="new-password">Schimbă parola:</label>
+                                <input type="password" id="new-password" placeholder="Noua parolă">
+                            </div>
+
+                            <div class="setting">
+                                <label for="confirm-password">Confirmă parola:</label>
+                                <input type="password" id="confirm-password" placeholder="Confirmă parola">
+                            </div>
+
+                            <div class="setting">
+                                <label for="camera-ip-setting">IP Cameră ESP32:</label>
+                                <input type="text" id="camera-ip-setting" placeholder="192.168.x.x" value="">
+                            </div>
+                        </div>
+
+                        <div class="settings-group">
+                            <h4>Notificări</h4>
+
+                            <div class="setting-toggle">
+                                <span>Sunet la notificări</span>
+                                <label class="switch">
+                                    <input type="checkbox" checked>
+                                    <span class="slider round"></span>
+                                </label>
+                            </div>
+
+                            <div class="setting-toggle">
+                                <span>Notificări desktop</span>
+                                <label class="switch">
+                                    <input type="checkbox" checked>
+                                    <span class="slider round"></span>
+                                </label>
+                            </div>
+
+                            <div class="setting-toggle">
+                                <span>Detectare automată fețe</span>
+                                <label class="switch">
+                                    <input type="checkbox" id="auto-detection-toggle">
+                                    <span class="slider round"></span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <button class="btn-primary" id="save-settings">
+                            <i class="fas fa-save"></i> Salvează setările
+                        </button>
+                    </div>
+                </section>
+            </div>
+        </main>
+    </div>
+
+    <div class="modal" id="image-modal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <img id="modal-image" src="" alt="Imagine vizitator">
+            <div class="modal-controls">
+                <button class="btn-success modal-grant-access">
+                    <i class="fas fa-lock-open"></i> Permite accesul
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="/static/js/app.js"></script>
+</body>
+
+</html>
